@@ -1,0 +1,36 @@
+# Context Engineering Repository .gitignore
+
+# IDE and editor files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+
+# Temporary files
+*.tmp
+*.temp
+.cache/
+
+# Local development settings
+.env
+.env.local
+
+# Generated reports
+performance_results.json
+apple_silicon_benchmark_results.json
+training_performance_report.html
+
+# Log files
+*.log
+
+# Python cache (if any Python scripts are added)
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# System files
+Thumbs.db
+desktop.ini

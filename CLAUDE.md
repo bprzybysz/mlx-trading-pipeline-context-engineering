@@ -2,7 +2,7 @@
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
-## Development Commands
+## Development Commandsaa
 
 ### Environment Setup
 ```bash
@@ -32,11 +32,32 @@ make fetch-historical-data
 make train-models
 ```
 
+### Unified Python Execution (ALWAYS USE THIS)
+**IMPORTANT**: Always use these commands when running any Python logic, tests, or scripts to ensure consistent environment setup:
+
+```bash
+# Universal Python runner - use for ANY Python execution
+python run_py.py <command> [args...]
+
+# Examples:
+python run_py.py -m pytest tests/test_complete_pipeline.py -v --tb=short
+python run_py.py -m pytest tests/ -v --tb=short  
+python run_py.py main.py
+python run_py.py -c "import mlx_trading_pipeline; print('works')"
+
+# Via Make target (alternative)
+make uv_run ARGS='-m pytest tests/test_complete_pipeline.py -v'
+make uv_run ARGS='main.py'
+make uv_run ARGS='-c "import mlx_trading_pipeline; print(\"works\")"'
+```
+
 ### Testing
 ```bash
-# Run all tests
-make test
-pytest tests/ -v --tb=short
+# Run all tests (PREFERRED METHOD)
+python run_py.py -m pytest tests/ -v --tb=short
+
+# Run complete pipeline tests specifically  
+python run_py.py -m pytest tests/test_complete_pipeline.py -v --tb=short
 
 # Run integration tests only
 make test-integration
@@ -44,8 +65,9 @@ make test-integration
 # Run performance benchmarks
 make test-performance
 
-# Quick test subset
-make quick-test
+# Legacy methods (still work)
+make test
+pytest tests/ -v --tb=short
 ```
 
 ### Code Quality
@@ -181,3 +203,81 @@ The project has migrated from `pybreaker` to `purgatory` for circuit breaker fun
 - Pipeline metrics via `/metrics` endpoint
 - Component health checks in main event loop
 - Apple Silicon specific metrics (P-core/E-core utilization, GPU usage)
+
+## Important Execution Instructions
+
+### ALWAYS Use run_py.py for Python Execution
+**CRITICAL**: When working with this codebase, ALWAYS use the unified Python runner to avoid import and path issues:
+
+```bash
+# ✅ CORRECT - Use this for ALL Python execution
+python run_py.py <command> [args...]
+
+# ❌ INCORRECT - Don't use these directly
+python main.py
+pytest tests/
+uv run python main.py
+```
+
+The `run_py.py` script automatically:
+- Sets up correct PYTHONPATH including src/ directory  
+- Uses appropriate Python environment (prefers /Users/bprzybysz/nc-src/.venv)
+- Ensures all imports work correctly for the package structure
+- Provides consistent execution environment
+
+### Examples of Correct Usage:
+```bash
+# Run tests
+python run_py.py -m pytest tests/test_complete_pipeline.py -v --tb=short
+
+# Run main pipeline
+python run_py.py main.py
+
+# Quick import test
+python run_py.py -c "import mlx_trading_pipeline; print('✅ Package imports work')"
+
+# Alternative via Make
+make uv_run ARGS='-m pytest tests/test_complete_pipeline.py -v'
+```
+
+This ensures all tests pass and imports work correctly across the modular package structure.
+
+## Context Engineering Framework
+
+### Advanced AI Development Support
+This project includes a comprehensive **Context Engineering** framework in the `context-engineering/` directory that provides:
+
+#### Key Resources:
+- **`context-engineering/README.md`**: Complete framework overview and methodology
+- **`context-engineering/examples/`**: Implementation patterns for MLX Trading Pipeline
+- **`context-engineering/use-cases/`**: Apple Silicon optimization scenarios  
+- **`context-engineering/PRPs/`**: Product Requirements Prompts (detailed implementation blueprints)
+
+#### Context Engineering Benefits:
+- **10x Better than Prompt Engineering**: Complete implementation "screenplays" vs simple directions
+- **Consistent Quality**: All implementations follow established Apple Silicon patterns
+- **Performance Built-in**: MLX optimizations and <10ms targets integrated into every feature
+- **Comprehensive Validation**: Built-in testing and benchmark frameworks
+
+#### When to Use Context Engineering:
+1. **New Feature Development**: Use `context-engineering/INITIAL.md` template
+2. **Performance Optimization**: Reference Apple Silicon use cases
+3. **Architecture Changes**: Update patterns and examples in framework
+4. **AI-Assisted Development**: Provide PRPs as complete context for implementation
+
+#### Usage Pattern:
+```bash
+# 1. Review relevant examples and use cases
+cat context-engineering/examples/feature-implementation.md
+cat context-engineering/use-cases/apple-silicon-optimization.md
+
+# 2. Create structured feature request
+cp context-engineering/INITIAL.md my-feature-request.md
+
+# 3. Generate PRP (Product Requirements Prompt) 
+# 4. Provide PRP to AI for implementation
+# 5. Validate with integrated test framework
+```
+
+This context engineering approach ensures all implementations meet Apple Silicon performance targets and follow established architectural patterns.
+- rememeber to call make run_py <cmd/script> for all py logic tests included
